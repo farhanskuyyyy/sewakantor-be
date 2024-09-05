@@ -116,17 +116,28 @@ class BookingTransactionResource extends Resource
                             $messageBody = "Hi {$record->name}, pemesanan Anda dengan kode {$record->booking_trx_id} sudah terbayar penuh.\n\n";
                             $messageBody .= "Silahkan datang kepada lokasi kantor {$record->officeSpace->name} untuk mulai menggunakan ruangan kerja tersebut.\n\n";
                             $messageBody .= "Jika Anda memiliki pertanyaan silahkan menghubungi CS kami di buildwithangga.com/contact-us.";
+
+                            // send sms
+                            // $message = $twilio->messages->create(
+                            //     "+6289629657237", // to
+                            //     [
+                            //         "body" => $messageBody,
+                            //         "from" => getenv("TWILIO_PHONE_NUMBER"),
+                            //     ]
+                            // );
+
+                            // send wa
                             $message = $twilio->messages->create(
-                                "+6289629657237", // to
+                                "whatsapp:+6289629657237", // to
                                 [
+                                    "from" => "whatsapp:" . getenv("TWILIO_PHONE_NUMBER_WA"),
                                     "body" => $messageBody,
-                                    "from" => getenv("TWILIO_PHONE_NUMBER"),
                                 ]
                             );
                         })
                         ->color('success')
                         ->requiresConfirmation()
-                        ->visible(fn (BookingTransaction $record) => !$record->is_paid),
+                        ->visible(fn(BookingTransaction $record) => !$record->is_paid),
                 ])
             ])
             ->bulkActions([
