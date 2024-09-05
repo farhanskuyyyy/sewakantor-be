@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BookingTransactionResource\Pages;
 use App\Filament\Resources\BookingTransactionResource\RelationManagers;
+use Filament\Notifications\Notification;
+use Twilio\Rest\Client;
 
 class BookingTransactionResource extends Resource
 {
@@ -27,7 +29,7 @@ class BookingTransactionResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('is_paid',true)->count();
+        return static::getModel()::where('is_paid', true)->count();
     }
 
     public static function form(Form $form): Form
@@ -91,6 +93,40 @@ class BookingTransactionResource extends Resource
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\Action::make('approve')
+                        ->label('Approve')
+                        ->action(function (BookingTransaction $record) {
+                            $record->is_paid = true;
+                            $record->save();
+
+                            // Trigger the custom notification Notification::make()
+                            Notification::make()
+                                ->title('Booking Approved')
+                                ->success()
+                                ->body('The booking has been successfully approved.')
+                                ->send();
+
+                            // Find your Account SID and Auth Token at twilio.com/console
+                            // and set the environment variables. See http://twil.io/secure
+                            $sid = getenv("TWILIO_ACCOUNT_SID");
+                            $token = getenv("TWILIO_AUTH_TOKEN");
+                            $twilio = new Client($sid, $token);
+
+                            // Create the message with line breaks
+                            $messageBody = "Hi {$record->name}, pemesanan Anda dengan kode {$record->booking_trx_id} sudah terbayar penuh.\n\n";
+                            $messageBody .= "Silahkan datang kepada lokasi kantor {$record->officeSpace->name} untuk mulai menggunakan ruangan kerja tersebut.\n\n";
+                            $messageBody .= "Jika Anda memiliki pertanyaan silahkan menghubungi CS kami di buildwithangga.com/contact-us.";
+                            $message = $twilio->messages->create(
+                                "+6289629657237", // to
+                                [
+                                    "body" => $messageBody,
+                                    "from" => getenv("TWILIO_PHONE_NUMBER"),
+                                ]
+                            );
+                        })
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->visible(fn (BookingTransaction $record) => !$record->is_paid),
                 ])
             ])
             ->bulkActions([
