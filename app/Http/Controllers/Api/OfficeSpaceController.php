@@ -9,15 +9,21 @@ use App\Http\Resources\Api\OfficeSpaceResource;
 
 class OfficeSpaceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $officeSpaces = OfficeSpace::with('city')->get();
+        $limit = $request->input('limit') ?? 10;
+        $page = $request->input('page') ?? 1;
+        $offset = $limit * ($page - 1);
+        $officeSpaces = OfficeSpace::with('city')
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
         return OfficeSpaceResource::collection($officeSpaces);
     }
 
     public function show(OfficeSpace $officeSpace)
     {
-        $officeSpace->load(['city','photos','benefits']);
+        $officeSpace->load(['city', 'photos', 'benefits']);
         return new OfficeSpaceResource($officeSpace);
     }
 }
