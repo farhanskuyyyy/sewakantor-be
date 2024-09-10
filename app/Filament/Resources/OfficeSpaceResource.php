@@ -22,9 +22,13 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\MarkdownEditor;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\OfficeSpaceResource\Pages;
 use App\Filament\Resources\OfficeSpaceResource\RelationManagers;
+use App\Filament\Resources\OfficeSpaceResource\RelationManagers\SalesRelationManager;
+use App\Filament\Resources\OfficeSpaceResource\RelationManagers\RatingsRelationManager;
+use App\Filament\Resources\OfficeSpaceResource\RelationManagers\FeaturesRelationManager;
 
 class OfficeSpaceResource extends Resource
 {
@@ -41,14 +45,6 @@ class OfficeSpaceResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                TextInput::make('address')
-                    ->required()
-                    ->maxLength(255),
-                FileUpload::make('thumbnail')
-                    ->directory('office-thumbnails')
-                    ->image()
-                    ->imageEditor()
-                    ->required(),
                 TextInput::make('duration')
                     ->required()
                     ->numeric()
@@ -62,17 +58,36 @@ class OfficeSpaceResource extends Resource
                     ->required()
                     ->numeric()
                     ->prefix('IDR'),
-                Textarea::make('about')->required()->rows(10)->cols(20)->columnSpanFull(),
+                TextInput::make('address')
+                    ->required()
+                    ->maxLength(255)
+                    ->columnSpanFull(),
+                FileUpload::make('thumbnail')
+                    ->directory('office-thumbnails')
+                    ->image()
+                    ->imageEditor()
+                    ->required(),
+                MarkdownEditor::make('about')->required(),
                 Section::make('Status')->schema([
                     Toggle::make('is_open')->label("Open")->helperText('Enable or disable Office visibility')->default(true),
                     Toggle::make('is_full_booked')->label("Full Booked")->helperText('Enable or disable Capacity status'),
                 ]),
-                Repeater::make('photos')->relationship('photos')->schema([
-                    FileUpload::make('photo')->required()->image()->imageEditor()->directory('office-photos')
-                ]),
+                Repeater::make('sales')->relationship('sales')->schema([
+                    TextInput::make('name')->required(),
+                    TextInput::make('position')->required(),
+                    TextInput::make('phonenumber')->required()->columnSpanFull(),
+                ])->columns(2),
                 Repeater::make('benefits')->relationship('benefits')->schema([
                     TextInput::make('name')->required()
                 ]),
+                Repeater::make('photos')->relationship('photos')->schema([
+                    FileUpload::make('photo')->required()->image()->imageEditor()->directory('office-photos')
+                ]),
+                Repeater::make('features')->relationship('features')->schema([
+                    TextInput::make('name')->required()->columnSpanFull(),
+                    FileUpload::make('icon')->image()->imageEditor()->directory('icons')->required(),
+                    MarkdownEditor::make('description')->required(),
+                ])->columns(2)
             ]);
     }
 
@@ -95,7 +110,7 @@ class OfficeSpaceResource extends Resource
                 //
                 SelectFilter::make('city_id')
                     ->label('City')
-                    ->relationship('city','name')
+                    ->relationship('city', 'name')
             ])
             ->actions([
                 ActionGroup::make([

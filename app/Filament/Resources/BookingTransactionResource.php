@@ -4,23 +4,27 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use Filament\Forms\Get;
+use Twilio\Rest\Client;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\BookingTransaction;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BookingTransactionResource\Pages;
 use App\Filament\Resources\BookingTransactionResource\RelationManagers;
-use Filament\Notifications\Notification;
-use Twilio\Rest\Client;
 
 class BookingTransactionResource extends Resource
 {
@@ -60,12 +64,25 @@ class BookingTransactionResource extends Resource
                 Toggle::make('is_paid')
                     ->label("Paid")
                     ->helperText('Payment Status')
-                    ->default(true),
+                    ->default(true)
+                    ->live(),
                 Select::make('office_space_id')
                     ->relationship('officeSpace', 'name')
                     ->searchable()
                     ->preload()
-                    ->required()
+                    ->required(),
+                Section::make('Rating')->relationship('rating')->schema([
+                    Select::make('rate')->options([
+                        1 => 'Bintang 1',
+                        2 => 'Bintang 2',
+                        3 => 'Bintang 3',
+                        4 => 'Bintang 4',
+                        5 => 'Bintang 5',
+                    ]),
+                    Forms\Components\TextInput::make('comment')
+                        ->required()
+                        ->maxLength(255),
+                ])->columns(2)->visible(fn(Get $get):bool => $get('is_paid'))
             ]);
     }
 

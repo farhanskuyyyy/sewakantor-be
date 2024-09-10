@@ -46,6 +46,21 @@ class OfficeSpace extends Model
         return $this->hasMany(OfficeSpaceBenefit::class);
     }
 
+    public function features(): HasMany
+    {
+        return $this->hasMany(Feature::class);
+    }
+
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sales::class);
+    }
+
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
