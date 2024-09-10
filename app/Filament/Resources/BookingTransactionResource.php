@@ -17,6 +17,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
@@ -34,6 +35,24 @@ class BookingTransactionResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('is_paid', true)->count();
+    }
+
+    protected static int $globalSearchResultsLimit = 20; // limit global search
+
+
+    // for setup global search
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['booking_trx_id','name'];
+    }
+
+    // for setup global search detail
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Office' => $record->officeSpace->name,
+            'TRX ID' => $record->booking_trx_id
+        ];
     }
 
     public static function form(Form $form): Form
@@ -82,7 +101,7 @@ class BookingTransactionResource extends Resource
                     Forms\Components\TextInput::make('comment')
                         ->required()
                         ->maxLength(255),
-                ])->columns(2)->visible(fn(Get $get):bool => $get('is_paid'))
+                ])->columns(2)->visible(fn(Get $get): bool => $get('is_paid'))
             ]);
     }
 
