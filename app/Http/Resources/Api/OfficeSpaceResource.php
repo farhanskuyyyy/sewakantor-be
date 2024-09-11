@@ -23,9 +23,13 @@ class OfficeSpaceResource extends JsonResource
             'price' => $this->price,
             'thumbnail' => $this->thumbnail,
             'about' => $this->about,
+            'rating_avg' => $this->ratings_avg_rate,
+            'rating_count' => $this->ratings_count,
             'city' => new CityResource($this->whenLoaded('city')), // kalo new ambil satu data seperti first()
             'photos' => OfficeSpacePhotoResource::collection($this->whenLoaded('photos')), // kalo collection ambil all data seperti get()
             'benefits' => OfficeSpaceBenefitResource::collection($this->whenLoaded('benefits')),
+            'sales' => SalesResource::collection($this->whenLoaded('sales')),
+            'features' => FeatureResource::collection($this->whenLoaded('features')),
         ];
     }
 }

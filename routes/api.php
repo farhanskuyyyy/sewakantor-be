@@ -17,7 +17,7 @@ Route::middleware('api_key')->group(function () {
     // apiResource mencakup semua , index,edit,create,dll
     Route::apiResource('cities', CityController::class);
 
-    Route::get('/office/{officeSpace:slug}', [OfficeSpaceController::class, 'show']);
+    Route::get('/office/{slug}', [OfficeSpaceController::class, 'show']);
     Route::apiResource('offices', OfficeSpaceController::class);
 
     Route::post('booking-transaction', [BookingTransactionController::class, 'store']);

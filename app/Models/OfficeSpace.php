@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class OfficeSpace extends Model
 {
@@ -51,9 +52,11 @@ class OfficeSpace extends Model
         return $this->hasMany(Feature::class);
     }
 
-    public function ratings(): HasMany
+    public function ratings(): BelongsToMany
     {
-        return $this->hasMany(Rating::class);
+        // pake ini jg bisa
+        // return $this->hasManyThrough(Rating::class, BookingTransaction::class , 'office_space_id','booking_transaction_id','id' ,'id');
+        return $this->belongsToMany(Rating::class, 'booking_transactions' , 'office_space_id','id','id' ,'booking_transaction_id');
     }
 
     public function sales(): HasMany
