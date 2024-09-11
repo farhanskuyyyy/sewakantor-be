@@ -75,7 +75,8 @@ class OfficeSpaceResource extends Resource
                 Repeater::make('sales')->relationship('sales')->schema([
                     TextInput::make('name')->required(),
                     TextInput::make('position')->required(),
-                    TextInput::make('phonenumber')->required()->columnSpanFull(),
+                    TextInput::make('phonenumber')->required(),
+                    FileUpload::make('image')->image()->imageEditor()->directory('image-sales')->required(),
                 ])->columns(2),
                 Repeater::make('benefits')->relationship('benefits')->schema([
                     TextInput::make('name')->required()

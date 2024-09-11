@@ -19,6 +19,7 @@ class SalesResource extends JsonResource
             'name' => $this->name,
             'position' => $this->position,
             'phonenumber' => $this->phonenumber,
+            'image' => $this->image,
         ];
     }
 }

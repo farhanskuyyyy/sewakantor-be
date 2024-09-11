@@ -15,6 +15,7 @@ class Sales extends Model
         'name',
         'position',
         'phonenumber',
+        'image',
         'office_space_id',
     ];
 
