@@ -20,6 +20,7 @@ class BookingTransaction extends Model
         'started_at',
         'total_amount',
         'duration',
+        'attachment',
         'ended_at',
         'office_space_id',
     ];

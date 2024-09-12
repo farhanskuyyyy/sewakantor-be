@@ -22,10 +22,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BookingTransactionResource\Pages;
 use App\Filament\Resources\BookingTransactionResource\RelationManagers;
+use Filament\Tables\Columns\ImageColumn;
 
 class BookingTransactionResource extends Resource
 {
@@ -90,6 +92,7 @@ class BookingTransactionResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required(),
+                FileUpload::make('attachment')->image()->imageEditor()->directory('attachment-booking'),
                 Section::make('Rating')->relationship('rating')->schema([
                     Select::make('rate')->options([
                         1 => 'Bintang 1',
@@ -101,7 +104,7 @@ class BookingTransactionResource extends Resource
                     Forms\Components\TextInput::make('comment')
                         ->required()
                         ->maxLength(255),
-                ])->columns(2)->visible(fn(Get $get): bool => $get('is_paid'))
+                ])->columns(2)->visible(fn(Get $get): bool => $get('is_paid') ?? false)
             ]);
     }
 
@@ -114,6 +117,7 @@ class BookingTransactionResource extends Resource
                 TextColumn::make('name')->searchable(),
                 TextColumn::make('officeSpace.name')->searchable(),
                 TextColumn::make('started_at')->searchable()->date(),
+                ImageColumn::make('attachment'),
                 IconColumn::make('is_paid')->boolean()
                     ->trueColor('success')
                     ->falseColor('danger')
@@ -130,6 +134,7 @@ class BookingTransactionResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\Action::make('approve')
+                        ->icon('heroicon-o-arrow-down-on-square')
                         ->label('Approve')
                         ->action(function (BookingTransaction $record) {
                             $record->is_paid = true;

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use Twilio\Rest\Client;
+use App\Models\OfficeSpace;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\BookingTransaction;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\ViewBookingResource;
 use App\Http\Requests\StoreBookingTransactionRequest;
 use App\Http\Resources\Api\BookingTransactionResource;
-use App\Http\Resources\Api\ViewBookingResource;
-use App\Models\BookingTransaction;
-use App\Models\OfficeSpace;
-use Illuminate\Http\Request;
-use Twilio\Rest\Client;
 
 class BookingTransactionController extends Controller
 {
@@ -19,6 +20,14 @@ class BookingTransactionController extends Controller
 
         $officeSpace = OfficeSpace::find($validateData['office_space_id']);
 
+        if ($request->hasFile('attachment')) { //check if user input has image
+            //storing image
+            $file = $request->file('attachment');
+            $filename =  Str::random(16) . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/payments/', $filename);
+
+            $validateData['attachment'] = 'payments/' . $filename;
+        }
         $validateData['is_paid'] = false;
         $validateData['booking_trx_id'] = BookingTransaction::generateUniqueTrxId();
         $validateData['duration'] = $officeSpace->duration;

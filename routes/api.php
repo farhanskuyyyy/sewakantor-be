@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\BookingTransactionController;
 use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\OfficeSpaceController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,7 @@ Route::middleware('api_key')->group(function () {
 
     // apiResource mencakup semua , index,edit,create,dll
     Route::apiResource('cities', CityController::class);
+    Route::apiResource('payments', PaymentController::class);
 
     Route::get('/office/{slug}', [OfficeSpaceController::class, 'show']);
     Route::apiResource('offices', OfficeSpaceController::class);

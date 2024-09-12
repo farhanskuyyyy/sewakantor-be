@@ -27,6 +27,7 @@ class StoreBookingTransactionRequest extends FormRequest
             'started_at' => 'required',
             'office_space_id' => 'required',
             'total_amount' => 'required|integer',
+            'attachment' => 'required|file|max:2048|mimes:png,jpg,jpeg,svg',
         ];
     }
 }
