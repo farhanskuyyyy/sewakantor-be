@@ -24,9 +24,9 @@ class BookingTransactionController extends Controller
             //storing image
             $file = $request->file('attachment');
             $filename =  Str::random(16) . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public/payments/', $filename);
+            $file->storeAs('public/attachment-booking/', $filename);
 
-            $validateData['attachment'] = 'payments/' . $filename;
+            $validateData['attachment'] = 'attachment-booking/' . $filename;
         }
         $validateData['is_paid'] = false;
         $validateData['booking_trx_id'] = BookingTransaction::generateUniqueTrxId();
