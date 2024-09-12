@@ -77,7 +77,7 @@ class BookingTransactionController extends Controller
 
         $booking = BookingTransaction::where('phone_number', $request->phone_number)
             ->where('booking_trx_id', $request->booking_trx_id)
-            ->with(['officeSpace', 'officeSpace.city'])
+            ->with(['officeSpace', 'officeSpace.city','officeSpace.features'])
             ->first();
 
         if (!$booking) {
